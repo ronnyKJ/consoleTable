@@ -23,7 +23,7 @@ function getFormattedString(value, isHeaderValue) {
 	if (isHeaderValue) {}
 	else if (typeof value === 'string') {
 		// Wrap strings in inverted commans.
-		return '"' + value + '"';
+		return value;
 	}
 	else if (typeof value === 'function') {
 		// Just show `function` for a function.
@@ -41,11 +41,14 @@ function getFormattedString(value, isHeaderValue) {
 function getColoredAndFormattedString(value, isHeaderValue) {
 	var colorFn;
 	if (isHeaderValue) {}
-	else if (typeof value === 'number' || typeof value === 'boolean') {
-		 colorFn = chalk.blue;
+	else if (typeof value === 'number') {
+		 colorFn = chalk.green;
 	}
+	else if (typeof value === 'boolean') {
+		 colorFn = chalk.magenta;
+	}	
 	else if (typeof value === 'string') {
-		 colorFn = chalk.red;
+		 colorFn = chalk.yellow;
 	}
 	else if (typeof value === 'undefined') {
 		 colorFn = chalk.white;
@@ -88,20 +91,22 @@ function printRows (rows) {
 	// HACK: Increase table width just by 1 to make it look good.
 	tableWidth += 1;
 
-	console.log(repeatString(tableWidth, '='))
+	let output = [];
+	output.push(repeatString(tableWidth, '='))
 	for (i = 0; i < rows.length; i++) {
 		row = rows[i];
 		rowString = '';
 		for (var j = 0; j < row.length; j++) {
 			rowString += row[j] + SEPARATOR;
 		}
-		console.log(rowString);
+		output.push(rowString);
 		// Draw border after table header.
 		if (!i) {
-			console.log(repeatString(tableWidth, '-'))
+			output.push(repeatString(tableWidth, '-'))
 		}
 	}
-	console.log(repeatString(tableWidth, '='))
+	output.push(repeatString(tableWidth, '='));
+	return output.join('\n');
 }
 
 function printTable(data, keys) {
@@ -153,10 +158,11 @@ function printTable(data, keys) {
 		}
 	}
 
-	printRows(rows);
+	return printRows(rows);
 }
 
 console.table = console.table || function(data, keys) {
-	printTable(data, keys);
+	console.log(printTable(data, keys));
 }
 
+module.exports = printTable;
